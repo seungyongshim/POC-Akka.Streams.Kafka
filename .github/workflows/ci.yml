@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
+    - name: running kafka
+      run: |
+        cd kafka
+        docker-compose up -d
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -19,16 +23,16 @@ jobs:
     - name: Add Nuget
       run: |
         cd src
-        for proj in $(dotnet sln list | grep Tests)        
+        for proj in $(dotnet sln list | grep Tests)
         do
           dotnet add "$proj" package JunitXml.TestLogger || true
-          dotnet add "$proj" package altcover || true	
+          dotnet add "$proj" package altcover || true
         done
     - name: Test
-      run: |	  
-        cd src	
-        dotnet clean 	        
-        dotnet restore	      
+      run: |
+        cd src
+        dotnet clean
+        dotnet restore
         dotnet test --logger "junit;LogFileName=Report.xml"
         dotnet test /p:AltCover=true /p:AltCoverXmlreport="../altcover.xml" /p:AltCoverAssemblyExcludeFilter='(xunit.*)|(System.*)|(.*Tests)'
     - name: ReportGenerator
@@ -36,19 +40,19 @@ jobs:
       with:
         reports: '**/altcover.xml'
         targetdir: 'docs' # REQUIRED # The directory where the generated report should be saved.
-        sourcedirs: 'src' 
+        sourcedirs: 'src'
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.1
       with:
         path: docs
-        retention-days: 90  
+        retention-days: 90
     - name: Push Report
       uses: EndBug/add-and-commit@v4 # You can change this to use a specific version
       with:
         add: 'docs/*'
-        message: 'Coverage Report ${GITHUB_SHA}' 
-        ref: 'gh-pages' 
-        remove: ''  
+        message: 'Coverage Report ${GITHUB_SHA}'
+        ref: 'gh-pages'
+        remove: ''
     - name: Publish Unit Test Results
       uses: docker://ghcr.io/enricomi/publish-unit-test-result-action:v1.6
       if: always()
