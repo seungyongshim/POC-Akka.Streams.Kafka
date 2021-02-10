@@ -16,7 +16,7 @@ jobs:
       run: |
         cd kafka
         docker-compose up -d
-        sleep 30s
+        sleep 50s
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -33,11 +33,6 @@ jobs:
           dotnet add "$proj" package JunitXml.TestLogger || true
           dotnet add "$proj" package altcover || true
         done
-    - name: logging kafka
-      if: always()
-      run: |
-        cd kafka
-        docker-compose logs
     - name: Test
       run: |
         cd src
@@ -45,6 +40,11 @@ jobs:
         dotnet restore
         dotnet test --logger "junit;LogFileName=Report.xml"
         dotnet test /p:AltCover=true /p:AltCoverXmlreport="../altcover.xml" /p:AltCoverAssemblyExcludeFilter='(xunit.*)|(System.*)|(.*Tests)'
+    - name: logging kafka
+      if: always()
+      run: |
+        cd kafka
+        docker-compose logs
     - name: ReportGenerator
       uses: danielpalme/ReportGenerator-GitHub-Action@4.8.4
       with:
