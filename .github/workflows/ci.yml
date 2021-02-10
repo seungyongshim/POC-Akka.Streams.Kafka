@@ -17,14 +17,14 @@ jobs:
         cd kafka
         docker-compose up -d
         sleep 30s
-    - name: logging kafka
-      run: |
-        cd kafka
-        docker-compose logs
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.101
+    - name: logging kafka
+      run: |
+        cd kafka
+        docker-compose logs
     - name: Add Nuget
       run: |
         cd src
@@ -33,6 +33,11 @@ jobs:
           dotnet add "$proj" package JunitXml.TestLogger || true
           dotnet add "$proj" package altcover || true
         done
+    - name: logging kafka
+      if: always()
+      run: |
+        cd kafka
+        docker-compose logs
     - name: Test
       run: |
         cd src
