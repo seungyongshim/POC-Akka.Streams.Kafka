@@ -13,8 +13,8 @@ namespace Common
     {
         public KafkaSenderActor(string topic)
         {
-            var producerSettings = ProducerSettings<Null, string>.Create(Context.System, null, null)
-                .WithBootstrapServers("localhost:9092");
+            var producerSettings = ProducerSettings<Null, string>.Create(Context.System, null, Serializers.Utf8)
+                                                                 .WithBootstrapServers("localhost:9092");
 
             var source = Source.ActorRef<object>(5000, OverflowStrategy.DropTail);
 
@@ -23,7 +23,6 @@ namespace Common
                 var sink = builder.Add(KafkaProducer.PlainSink(producerSettings));
                 var flow = builder.Add(from msg in Flow.Create<object>()
                                        select new ProducerRecord<Null, string>(topic, msg.ToString()));
-
 
                 builder.From(start)
                        .Via(flow)

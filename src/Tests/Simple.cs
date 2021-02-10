@@ -52,12 +52,11 @@ namespace Tests
                     ", (sp, sys) =>
                     {
                         var testActor = sp.GetService<TestKit>().TestActor;
-                        var kafkaConsumerProps = sys.PropsFactory<KafkaConsumerActor>()
-                                                    .Create(topicName,
-                                                            groupId,
-                                                            testActor);
-                        
-                        sys.ActorOf(kafkaConsumerProps, "KafkaConsumer");
+
+                        sys.ActorOf(sys.PropsFactory<KafkaConsumerActor>()
+                                       .Create(topicName,
+                                               groupId,
+                                               testActor), "KafkaConsumer");
                         sys.ActorOf(sys.PropsFactory<KafkaSenderActor>()
                                        .Create(topicName), "KafkaSender");
                         
@@ -102,8 +101,8 @@ namespace Tests
             var kafkaConsumerActor = await sys.ActorSelection("/user/KafkaConsumer")
                                               .ResolveOne(10.Seconds());
 
-            var kafkaSenderActor = await sys.ActorSelection("/user/KafkaSender")
-                                            .ResolveOne(10.Seconds());
+            var kafkaSenderActor   = await sys.ActorSelection("/user/KafkaSender")
+                                              .ResolveOne(10.Seconds());
 
             kafkaSenderActor.Tell("Hello, Test!!!");
 

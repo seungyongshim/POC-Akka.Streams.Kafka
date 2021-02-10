@@ -17,9 +17,10 @@ namespace Common
     {
         public KafkaConsumerActor(string topic, string groupId, IActorRef parserActor)
         {
-            var consumerSettings = ConsumerSettings<Null, string>.Create(Context.System, null, null)
-                .WithBootstrapServers("localhost:9092")
-                .WithGroupId(groupId);
+            var consumerSettings = ConsumerSettings<Null, string>.Create(Context.System, null, Deserializers.Utf8)
+                                                                 .WithBootstrapServers("localhost:9092")
+                                                                 .WithGroupId(groupId)
+                                                                 .WithProperty("auto.offset.reset", "earliest");
 
             var source = KafkaConsumer.CommittableSource(consumerSettings, Subscriptions.Topics(topic));
 
@@ -41,7 +42,7 @@ namespace Common
 
             Context.Materializer().Materialize(graph);
 
-            Receive<(string, ICommittableOffset)>(m => parserActor.Forward(m));
+            Receive<(string Value, ICommittableOffset Commit)>(m => parserActor.Forward(m.Value));
         }
 
         private record CompleteMessage;
