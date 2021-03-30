@@ -27,28 +27,28 @@ namespace Tests
             using var host =
                 Host.CreateDefaultBuilder()
                     .UseAkka("test", @"
-                    akka.kafka.producer {
-                       parallelism = 100
-                       flush-timeout = 10s
-                       use-dispatcher = ""akka.kafka.default-dispatcher""
-                    }
-                    akka.kafka.default-dispatcher {
-                       type = ""Dispatcher""
-                       executor = ""default-executor""
-                    }
-                    akka.kafka.consumer {
-                        poll-interval = 50ms
-                        poll-timeout = 50ms
-                        stop-timeout = 30s
-                        close-timeout = 20s
-                        commit-timeout = 15s
-                        commit-time-warning = 1s
-                        commit-refresh-interval = infinite
-                        use-dispatcher = ""akka.kafka.default-dispatcher""
-                        wait-close-partition = 500ms
-                        position-timeout = 5s
-                        partition-handler-warning = 5s
-                    }
+                        akka.kafka.producer {
+                           parallelism = 100
+                           flush-timeout = 10s
+                           use-dispatcher = ""akka.kafka.default-dispatcher""
+                        }
+                        akka.kafka.default-dispatcher {
+                           type = ""Dispatcher""
+                           executor = ""default-executor""
+                        }
+                        akka.kafka.consumer {
+                            poll-interval = 50ms
+                            poll-timeout = 50ms
+                            stop-timeout = 30s
+                            close-timeout = 20s
+                            commit-timeout = 15s
+                            commit-time-warning = 1s
+                            commit-refresh-interval = infinite
+                            use-dispatcher = ""akka.kafka.default-dispatcher""
+                            wait-close-partition = 500ms
+                            position-timeout = 5s
+                            partition-handler-warning = 5s
+                        }
                     ", (sp, sys) =>
                     {
                         var testActor = sp.GetService<TestKit>().TestActor;
@@ -90,7 +90,7 @@ namespace Tests
                     {
                         Name = topicName,
                         ReplicationFactor = 1,
-                        NumPartitions = 1
+                        NumPartitions = 16
                     }
                 });
             }
@@ -106,7 +106,7 @@ namespace Tests
 
             kafkaSenderActor.Tell("Hello, Test!!!");
 
-            testKit.ExpectMsg<string>().Should().Be("Hello, Test!!!");
+            testKit.ExpectMsg<string>(10.Seconds()).Should().Be("Hello, Test!!!");
 
             await host.StopAsync();
         }
