@@ -77,7 +77,7 @@ namespace Tests
                     {
                         topicName
                     });
-                    await Task.Delay(100);
+                    await Task.Delay(1000);
                 }
                 catch (DeleteTopicsException ex)
                 {
