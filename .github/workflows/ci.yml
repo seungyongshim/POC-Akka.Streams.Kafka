@@ -38,8 +38,7 @@ jobs:
         cd src
         dotnet clean
         dotnet restore
-        dotnet test --logger "junit;LogFileName=Report.xml"
-        dotnet test /p:AltCover=true /p:AltCoverXmlreport="../altcover.xml" /p:AltCoverAssemblyExcludeFilter='(xunit.*)|(System.*)|(.*Tests)'
+        dotnet test --logger "junit;LogFileName=Report.xml" /p:AltCover=true /p:AltCoverXmlreport="../altcover.xml" /p:AltCoverAssemblyExcludeFilter='(xunit.*)|(System.*)|(.*Tests)'
     - name: logging kafka
       if: always()
       run: |
