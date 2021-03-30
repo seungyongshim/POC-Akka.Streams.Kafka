@@ -102,15 +102,13 @@ namespace Tests
             var kafkaSenderActor   = await sys.ActorSelection("/user/KafkaSender")
                                               .ResolveOne(10.Seconds());
 
-            kafkaSenderActor.Tell("Hello, Test1");
-            kafkaSenderActor.Tell("Hello, Test2");
-
             var kafkaConsumerActor = await sys.ActorSelection("/user/KafkaConsumer")
                                               .ResolveOne(10.Seconds());
 
 
+            kafkaSenderActor.Tell("Hello, Test1");
+
             testKit.ExpectMsg<string>(10.Seconds()).Should().Be("Hello, Test1");
-            testKit.ExpectMsg<string>(10.Seconds()).Should().Be("Hello, Test2");
 
             await host.StopAsync();
         }
