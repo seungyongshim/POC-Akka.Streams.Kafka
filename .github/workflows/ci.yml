@@ -38,13 +38,8 @@ jobs:
         cd src
         dotnet clean
         dotnet restore
-        dotnet test /p:AltCover=true /p:AltCoverXmlreport="../altcover.xml" /p:AltCoverAssemblyExcludeFilter='(xunit.*)|(System.*)|(.*Tests)' 
         dotnet test --logger "junit;LogFileName=Report.xml"
-    - name: logging kafka
-      if: always()
-      run: |
-        cd kafka
-        docker-compose logs
+        dotnet test /p:AltCover=true /p:AltCoverXmlreport="../altcover.xml" /p:AltCoverAssemblyExcludeFilter='(xunit.*)|(System.*)|(.*Tests)' 
     - name: ReportGenerator
       uses: danielpalme/ReportGenerator-GitHub-Action@4.8.4
       with:
@@ -69,3 +64,9 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         files: src/**/Report.xml
+    - name: logging kafka
+      if: always()
+      run: |
+        cd kafka
+        docker-compose logs
+	
