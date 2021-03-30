@@ -98,15 +98,19 @@ namespace Tests
             var sys = host.Services.GetService<ActorSystem>();
             var testKit = host.Services.GetService<TestKit>();
             
-            var kafkaConsumerActor = await sys.ActorSelection("/user/KafkaConsumer")
-                                              .ResolveOne(10.Seconds());
-
+            
             var kafkaSenderActor   = await sys.ActorSelection("/user/KafkaSender")
                                               .ResolveOne(10.Seconds());
 
-            kafkaSenderActor.Tell("Hello, Test!!!");
+            kafkaSenderActor.Tell("Hello, Test1");
+            kafkaSenderActor.Tell("Hello, Test2");
 
-            testKit.ExpectMsg<string>(10.Seconds()).Should().Be("Hello, Test!!!");
+            var kafkaConsumerActor = await sys.ActorSelection("/user/KafkaConsumer")
+                                              .ResolveOne(10.Seconds());
+
+
+            testKit.ExpectMsg<string>(10.Seconds()).Should().Be("Hello, Test1");
+            testKit.ExpectMsg<string>(10.Seconds()).Should().Be("Hello, Test2");
 
             await host.StopAsync();
         }
