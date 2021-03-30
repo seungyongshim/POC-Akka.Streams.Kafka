@@ -42,7 +42,10 @@ namespace Common
 
             Context.Materializer().Materialize(graph);
 
-            Receive<(string Value, ICommittableOffset Commit)>(m => parserActor.Forward(m.Value));
+            Receive<(string Value, ICommittableOffset Commit)>(m =>
+            {
+                parserActor.Forward(m.Value);
+            });
         }
 
         private record CompleteMessage;
