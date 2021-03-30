@@ -18,7 +18,7 @@ namespace Common
         public KafkaConsumerActor(string topic, string groupId, IActorRef parserActor)
         {
             var consumerSettings = ConsumerSettings<Null, string>.Create(Context.System, null, Deserializers.Utf8)
-                                                                 .WithBootstrapServers("localhost:9092")
+                                                                 .WithBootstrapServers("127.0.0.1:9092")
                                                                  .WithGroupId(groupId)
                                                                  .WithProperty("auto.offset.reset", "earliest");
 

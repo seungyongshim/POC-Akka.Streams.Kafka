@@ -14,7 +14,7 @@ namespace Common
         public KafkaSenderActor(string topic)
         {
             var producerSettings = ProducerSettings<Null, string>.Create(Context.System, null, Serializers.Utf8)
-                                                                 .WithBootstrapServers("localhost:9092");
+                                                                 .WithBootstrapServers("127.0.0.1:9092");
 
             var source = Source.ActorRef<object>(5000, OverflowStrategy.DropTail);
 
