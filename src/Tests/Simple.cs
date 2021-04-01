@@ -1,7 +1,5 @@
-using System;
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.TestKit;
 using Akka.TestKit.Xunit2;
 using Common;
 using Confluent.Kafka;
@@ -10,7 +8,7 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Nexon.Akka.DependencyInjection;
+using SeungYongShim.Akka.DependencyInjection;
 using Xunit;
 
 namespace Tests
@@ -59,7 +57,6 @@ namespace Tests
                                                testActor), "KafkaConsumer");
                         sys.ActorOf(sys.PropsFactory<KafkaSenderActor>()
                                        .Create(topicName), "KafkaSender");
-                        
                     })
                     .UseAkkaWithXUnit2()
                     .Build();
@@ -81,7 +78,6 @@ namespace Tests
                 }
                 catch (DeleteTopicsException ex)
                 {
-
                 }
 
                 await adminClient.CreateTopicsAsync(new TopicSpecification[]
@@ -97,18 +93,16 @@ namespace Tests
 
             var sys = host.Services.GetService<ActorSystem>();
             var testKit = host.Services.GetService<TestKit>();
-            
-            
-            var kafkaSenderActor   = await sys.ActorSelection("/user/KafkaSender")
-                                              .ResolveOne(10.Seconds());
+
+            var kafkaSenderActor = await sys.ActorSelection("/user/KafkaSender")
+                                            .ResolveOne(10.Seconds());
 
             var kafkaConsumerActor = await sys.ActorSelection("/user/KafkaConsumer")
                                               .ResolveOne(10.Seconds());
 
-
             kafkaSenderActor.Tell("Hello, Test1");
 
-            testKit.ExpectMsg<string>(10.Seconds()).Should().Be("Hello, Test1");
+            testKit.ExpectMsg<string>(5.Seconds()).Should().Be("Hello, Test1");
 
             await host.StopAsync();
         }

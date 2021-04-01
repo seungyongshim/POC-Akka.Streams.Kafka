@@ -13,16 +13,23 @@ namespace Common
     {
         public KafkaSenderActor(string topic)
         {
-            var producerSettings = ProducerSettings<Null, string>.Create(Context.System, null, Serializers.Utf8)
-                                                                 .WithBootstrapServers("127.0.0.1:9092");
 
-            var source = Source.ActorRef<object>(5000, OverflowStrategy.DropTail);
+
+            var producerSettings = ProducerSettings<string, string>.Create(Context.System, Serializers.Utf8, Serializers.Utf8)
+                                                                   .WithBootstrapServers("127.0.0.1:9092");
+
+            var source = Source.ActorRef<(string, object)>(5000, OverflowStrategy.DropTail);
 
             var graph = GraphDsl.Create(source, (builder, start) =>
             {
-                var sink = builder.Add(KafkaProducer.PlainSink(producerSettings));
-                var flow = builder.Add(from msg in Flow.Create<object>()
-                                       select new ProducerRecord<Null, string>(topic, msg.ToString()));
+                var sink = builder.Add(RestartSink.WithBackoff(() => KafkaProducer.PlainSink(producerSettings),
+                                                               TimeSpan.FromSeconds(1),
+                                                               TimeSpan.FromSeconds(10),
+                                                               0.1));
+
+                var flow = builder.Add(Flow.Create<(string Key, object Value)>()
+                                           .Select(msg => new ProducerRecord<string, string>(topic, msg.Key, msg.Value.ToString()))
+                                           );
 
                 builder.From(start)
                        .Via(flow)
@@ -33,7 +40,7 @@ namespace Common
 
             var sourceActor = Context.Materializer().Materialize(graph);
 
-            Receive<string>(m => sourceActor.Forward(m));
+            Receive<string>(m => sourceActor.Forward((string.Empty, (object)m)));
         }
     }
 }

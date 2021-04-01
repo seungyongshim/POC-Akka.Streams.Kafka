@@ -17,16 +17,16 @@ namespace Common
     {
         public KafkaConsumerActor(string topic, string groupId, IActorRef parserActor)
         {
-            var consumerSettings = ConsumerSettings<Null, string>.Create(Context.System, null, Deserializers.Utf8)
-                                                                 .WithBootstrapServers("127.0.0.1:9092")
-                                                                 .WithGroupId(groupId)
-                                                                 .WithProperty("auto.offset.reset", "earliest");
+            var consumerSettings = ConsumerSettings<string, string>.Create(Context.System, Deserializers.Utf8, Deserializers.Utf8)
+                                                                   .WithBootstrapServers("127.0.0.1:9092")
+                                                                   .WithGroupId(groupId)
+                                                                   .WithProperty("auto.offset.reset", "earliest");
 
             var source = KafkaConsumer.CommittableSource(consumerSettings, Subscriptions.Topics(topic));
 
             var graph = GraphDsl.Create(source, (builder, start) =>
             {
-                var flow = builder.Add(from result in Flow.Create<CommittableMessage<Null, string>>()
+                var flow = builder.Add(from result in Flow.Create<CommittableMessage<string, string>>()
                                        let commit = result.CommitableOffset
                                        let value = result.Record.Message.Value
                                        select (value, commit));
