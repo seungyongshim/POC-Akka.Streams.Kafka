@@ -19,14 +19,33 @@ namespace App
             using var host =
                 Host.CreateDefaultBuilder()
                     .UseAkka("test", @"
+                        akka {
+                            stdout-loglevel = DEBUG
+                            loglevel = DEBUG
+                            log-config-on-start = on        
+                            actor {                
+                                debug {  
+                                      receive = on 
+                                      autoreceive = on
+                                      lifecycle = on
+                                      event-stream = on
+                                      unhandled = on
+                                }
+                            }
+                        }
+                        akka.stream {
+                            debug-logging = on
+                            initial-input-buffer-size = 1
+                            max-input-buffer-size = 1
+                        }
                         akka.kafka.producer {
-                           parallelism = 100
-                           flush-timeout = 10s
-                           use-dispatcher = ""akka.kafka.default-dispatcher""
+                            parallelism = 100
+                            flush-timeout = 10s
+                            use-dispatcher = ""akka.kafka.default-dispatcher""
                         }
                         akka.kafka.default-dispatcher {
-                           type = ""Dispatcher""
-                           executor = ""default-executor""
+                            type = ""Dispatcher""
+                            executor = ""default-executor""
                         }
                         akka.kafka.consumer {
                             poll-interval = 50ms
@@ -53,6 +72,15 @@ namespace App
                                             .ResolveOne(TimeSpan.FromSeconds(10));
 
             kafkaSenderActor.Tell("Hello, Test1");
+            kafkaSenderActor.Tell("Hello, Test2");
+            kafkaSenderActor.Tell("Hello, Test3");
+            kafkaSenderActor.Tell("Hello, Test4");
+            kafkaSenderActor.Tell("Hello, Test5");
+            kafkaSenderActor.Tell("Hello, Test6");
+            kafkaSenderActor.Tell("Hello, Test7");
+            kafkaSenderActor.Tell("Hello, Test8");
+            kafkaSenderActor.Tell("Hello, Test9");
+            kafkaSenderActor.Tell("Hello, Test10");
 
             await host.WaitForShutdownAsync();
         }
