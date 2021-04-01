@@ -101,8 +101,12 @@ namespace Tests
                                               .ResolveOne(10.Seconds());
 
             kafkaSenderActor.Tell("Hello, Test1");
+            kafkaSenderActor.Tell("Hello, Test2");
+            kafkaSenderActor.Tell("Hello, Test3");
 
             testKit.ExpectMsg<string>(5.Seconds()).Should().Be("Hello, Test1");
+            testKit.ExpectMsg<string>(5.Seconds()).Should().Be("Hello, Test2");
+            testKit.ExpectMsg<string>(5.Seconds()).Should().Be("Hello, Test3");
 
             await host.StopAsync();
         }
