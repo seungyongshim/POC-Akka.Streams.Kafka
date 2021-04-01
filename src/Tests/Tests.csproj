@@ -8,13 +8,19 @@
 
   <ItemGroup>
     <PackageReference Include="Akka.Streams.Kafka" Version="1.1.2" />
+    <PackageReference Include="Akka.TestKit.Xunit2" Version="1.4.18" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
     <PackageReference Include="SeungYongShim.Akka.DependencyInjection.XUnit2" Version="1.4.18.1" />
+    <PackageReference Include="Nexon.Akka.DependencyInjection.XUnit2" Version="1.4.16.300" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="3.0.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
