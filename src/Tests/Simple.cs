@@ -117,12 +117,12 @@ namespace Tests
                                               .ResolveOne(10.Seconds());
 
             kafkaSenderActor.Tell(new Simple { Body = "Hello, Test1", Number = 1 });
-            kafkaSenderActor.Tell(new Simple { Body = "Hello, Test1", Number = 2 });
-            kafkaSenderActor.Tell(new Simple { Body = "Hello, Test1", Number = 3 });
+            kafkaSenderActor.Tell(new Simple { Body = "Hello, Test2", Number = 2 });
+            kafkaSenderActor.Tell(new Simple { Body = "Hello, Test3", Number = 3 });
 
-            testKit.ExpectMsg<Simple>(5.Seconds()).Should().Be(new Simple { Body = "Hello, Test1", Number = 1 });
-            testKit.ExpectMsg<Simple>(5.Seconds()).Should().Be(new Simple { Body = "Hello, Test1", Number = 2 });
-            testKit.ExpectMsg<Simple>(5.Seconds()).Should().Be(new Simple { Body = "Hello, Test1", Number = 3 });
+            testKit.ExpectMsg<Simple>(15.Seconds()).Should().Be(new Simple { Body = "Hello, Test1", Number = 1 });
+            testKit.ExpectMsg<Simple>(15.Seconds()).Should().Be(new Simple { Body = "Hello, Test2", Number = 2 });
+            testKit.ExpectMsg<Simple>(15.Seconds()).Should().Be(new Simple { Body = "Hello, Test3", Number = 3 });
 
             await host.StopAsync();
 
