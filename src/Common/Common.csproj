@@ -7,10 +7,9 @@
   <ItemGroup>
     <PackageReference Include="Akka" Version="1.4.18" />
     <PackageReference Include="Akka.Streams.Kafka" Version="1.1.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Messages\" />
+    <PackageReference Include="Confluent.SchemaRegistry" Version="1.6.3" />
+    <PackageReference Include="Confluent.SchemaRegistry.Serdes.Protobuf" Version="1.6.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

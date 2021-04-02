@@ -1,15 +1,11 @@
 using System;
-using Akka;
+using System.Text;
 using Akka.Actor;
 using Akka.Event;
-using Akka.Streams;
-using Akka.Streams.Dsl;
-using Akka.Streams.Kafka.Dsl;
-using Akka.Streams.Kafka.Messages;
-using Akka.Streams.Kafka.Settings;
 using Confluent.Kafka;
+using Google.Protobuf;
 
-namespace Common
+namespace Core
 {
     public class KafkaSenderActor : ReceiveActor
     {
@@ -17,25 +13,27 @@ namespace Common
 
         private record CompleteMessage;
         private record KafkaMessage(string Key, string Value);
+
         public KafkaSenderActor(string topic)
         {
-
-            var config = new ProducerConfig {
+            var config = new ProducerConfig
+            {
                 BootstrapServers = "127.0.0.1:9092",
                 Acks = Acks.All,
             };
 
-            var p = new ProducerBuilder<string, string>(config).Build();
+            var p = new ProducerBuilder<string, byte[]>(config).Build();
 
-            ReceiveAsync<string>(async m =>
+            ReceiveAsync<IMessage>(async m =>
             {
-                _log.Info(m);
                 try
                 {
-                    var ret = await p.ProduceAsync(topic, new Message<string, string>
+                    var ret = await p.ProduceAsync(topic, new Message<string, byte[]>
                     {
                         Key = "1",
-                        Value = m
+                        Headers = new Headers { new Header("ClrType",
+                                                           Encoding.UTF8.GetBytes(m.Descriptor.ClrType.ToString()))},
+                        Value = m.ToByteArray()
                     });
                 }
                 catch (Exception ex)

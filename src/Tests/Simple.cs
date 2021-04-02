@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
-using Common;
+using Core;
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using FluentAssertions;
@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SeungYongShim.Akka.DependencyInjection;
 using Xunit;
+using System.Collections.Generic;
+using Google.Protobuf;
 
 namespace Tests
 {
@@ -24,30 +26,13 @@ namespace Tests
             // arrange
             using var host =
                 Host.CreateDefaultBuilder()
-                    .UseAkka("test", @"
-                        akka.kafka.producer {
-                           parallelism = 100
-                           flush-timeout = 10s
-                           use-dispatcher = ""akka.kafka.default-dispatcher""
-                        }
-                        akka.kafka.default-dispatcher {
-                           type = ""Dispatcher""
-                           executor = ""default-executor""
-                        }
-                        akka.kafka.consumer {
-                            poll-interval = 50ms
-                            poll-timeout = 50ms
-                            stop-timeout = 30s
-                            close-timeout = 20s
-                            commit-timeout = 15s
-                            commit-time-warning = 1s
-                            commit-refresh-interval = infinite
-                            use-dispatcher = ""akka.kafka.default-dispatcher""
-                            wait-close-partition = 500ms
-                            position-timeout = 5s
-                            partition-handler-warning = 5s
-                        }
-                    ", (sp, sys) =>
+                    .ConfigureServices(services =>
+                    {
+                        services.AddTransient<KafkaConsumer>();
+                        services.AddSingleton<Dictionary<string, MessageParser>>(
+                            new Dictionary<string, MessageParser> { });
+                    })
+                    .UseAkka("test", @"", (sp, sys) =>
                     {
                         var testActor = sp.GetService<TestKit>().TestActor;
 
