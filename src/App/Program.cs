@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Core;
 using Google.Protobuf;
+using Message.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SeungYongShim.Akka.DependencyInjection;
@@ -16,9 +17,15 @@ namespace App
     {
         static async Task Main(string[] args)
         {
-            var mkmkmskdf = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.GetInterface("IMessage") is not null).ToList();
+            var mkmkmskdf = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                             from type in assembly.GetTypes()
+                             where typeof(IMessage).IsAssignableFrom(type)
+                             where type.IsInterface is false
+                             select type).ToList();
 
-            var klklk= mkmkmskdf.Select(x => (x.FullName, x.GetProperty("Parser").GetGetMethod().Invoke(null, null))).ToList();
+            var klklk = (from type in mkmkmskdf
+                         select (type.FullName, type.GetProperty("Parser").GetGetMethod()?.Invoke(null, null) as MessageParser))
+                        .ToDictionary(x => x.FullName, x => x.Item2);
 
             var bootstrapServers = "localhost:9092";
             var topicName = "kafka.spec.app";
@@ -53,9 +60,8 @@ namespace App
                     })
                     .ConfigureServices(services =>
                     {
-                    services.AddTransient<KafkaConsumer>();
-                    services.AddSingleton<Dictionary<string, MessageParser>>(
-                        new Dictionary<string, MessageParser> { [SampleCommand.Descriptor.ClrType.ToString()] = SampleCommand.Parser });
+                        services.AddTransient<KafkaConsumer>();
+                        services.AddSingleton<Dictionary<string, MessageParser>>(klklk);
                     })
                     .Build();
 
@@ -68,9 +74,9 @@ namespace App
             var kafkaSenderActor = await sys.ActorSelection("/user/KafkaSender")
                                             .ResolveOne(TimeSpan.FromSeconds(10));
 
-            kafkaSenderActor.Tell(new SampleCommand { Body = "Hello, Test1", Number = 1 });
-            kafkaSenderActor.Tell(new SampleCommand { Body = "Hello, Test1", Number = 2 });
-            kafkaSenderActor.Tell(new SampleCommand { Body = "Hello, Test1", Number = 3 });
+            kafkaSenderActor.Tell(new Simple { Body = "Hello, Test1", Number = 1 });
+            kafkaSenderActor.Tell(new Simple { Body = "Hello, Test1", Number = 2 });
+            kafkaSenderActor.Tell(new Simple { Body = "Hello, Test1", Number = 3 });
 
 
             

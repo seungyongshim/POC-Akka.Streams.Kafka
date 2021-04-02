@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Core.Messages;
 using Confluent.Kafka;
+using Core.Messages;
 using Microsoft.Extensions.Logging;
 
 namespace Core

@@ -6,24 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Messages\SampleCommand.proto" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Grpc.Tools" Version="2.36.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="SeungYongShim.Akka.DependencyInjection" Version="1.4.18.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="Messages\SampleCommand.proto" />
+    <ProjectReference Include="..\Messages\Messages.csproj" />
   </ItemGroup>
 
 </Project>

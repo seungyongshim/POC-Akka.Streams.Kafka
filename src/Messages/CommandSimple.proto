@@ -1,6 +1,7 @@
 syntax = "proto3";
+package message.commands;
 
-message SampleCommand {
+message Simple {
   string body = 1;
   int32 number = 2;
 }
