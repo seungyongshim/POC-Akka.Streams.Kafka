@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="SeungYongShim.Akka.DependencyInjection" Version="1.4.18.1" />
+    <PackageReference Include="SeungYongShim.Akka.DependencyInjection" Version="1.4.19.100" />
   </ItemGroup>
 
   <ItemGroup>
